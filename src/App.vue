@@ -1,3 +1,4 @@
+<!-- Section3 -->
 // [v-html]
 <!-- <script setup>
 import { ref } from 'vue'
@@ -136,7 +137,7 @@ watchEffect(() => {
 </template> -->
 
 // [watch]特定のリアクティブなデータの変更を監視する
-<script setup>
+<!-- <script setup>
 import { ref, watchEffect, watch } from 'vue'
 const count1 = ref(0)
 const count2 = ref(0)
@@ -208,4 +209,74 @@ watchEffect(() => {
   <button @click="count1++">count1++</button>
   <button @click="count2++">count2++</button>
   <button @click="count3++">count3++</button>
+</template> -->
+
+// [class属性] 文字列以外での指定
+<!-- <script setup>
+import { ref } from 'vue'
+const className = ref('red')
+</script>
+<template>
+  <div :class="{ red: true, 'bg-blue': false }">Hello</div>
+  // 配列で指定
+  <div :class="[className, { 'bg-blue': true }]">Hello</div>
+  // 静的なクラスも同時に指定可能
+  <div class="border" :class="[className, { 'bg-blue': true }]">Hello</div>
 </template>
+<style>
+.red {
+  color: red;
+}
+.bg-blue {
+  background-color: blue;
+}
+.border {
+  border: 1px solid red;
+}
+</style> -->
+
+// [style属性] 文字列以外での指定
+<!-- <script setup></script>
+<template>
+  <div :style="{ color: 'red', backgroundColor: 'blue' }">Hello</div>
+</template> -->
+
+<!-- Section4 -->
+// [v-if] 条件をつけてレンダリングの実行を設定する
+<!-- <script setup>
+import { ref } from 'vue'
+const ok = ref(true)
+const maybeOk = ref(true)
+</script>
+<template>
+  <p v-if="ok">OK!</p>
+  <p v-else-if="maybeOk">maybe OK!</p>
+  <p v-else>not OK...</p>
+  // 必ずv-ifの直後にv-else-if,v-elseを書くこと
+  <button @click="ok = !ok">toggle</button>
+</template> -->
+
+// 効率よく複数の要素にv-ifを適用させる
+<!-- <script setup>
+import { ref } from 'vue'
+const ok = ref(true)
+</script>
+<template>
+  <button @click="ok = !ok">toggle</button>
+  <template v-if="ok">
+    // templateタグ内のtemplateタグはないものとして扱う=要素を作らない
+    <p>OK!</p>
+    <p>maybe OK!</p>
+    <p>not OK...</p>
+  </template>
+</template> -->
+
+//[v-show]　v-ifと似ているが、表示されていない時も要素が存在する(display:falseで要素が残る)。v-ifより処理が早い。
+<!-- <script setup>
+import { ref } from 'vue'
+const ok = ref(true)
+</script>
+<template>
+  <button @click="ok = !ok">toggle</button>
+  <p v-show="ok">OK!</p>
+</template> -->
