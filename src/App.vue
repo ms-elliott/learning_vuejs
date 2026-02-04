@@ -97,3 +97,115 @@ const userInput = ref('')
   <p>{{ userInput }}</p>
   <input v-model="userInput" type="text" />
 </template> -->
+
+// [computed]複雑な式を１つにまとめる
+<!-- <script setup>
+import { computed, ref } from 'vue'
+const score = ref(0)
+const evaluation = computed(() => {
+  console.log('computed')
+  return score.value > 3 ? 'Good' : 'Bad'
+})
+// computedは読み取り専用。値の代入はできない。
+console.log(evaluation.value)
+</script>
+<template>
+  <p>{{ score > 3 ? 'Good' : 'Bad' }}</p>
+  <p>{{ evaluation }}</p>
+  <p>{{ score }}</p>
+  <button @click="score++">+1</button>
+</template> -->
+
+// [watchEffect]リアクティブなデータの変更を監視する
+<!-- <script setup>
+import { ref, watchEffect } from 'vue'
+const count = ref(0)
+watchEffect(() => {
+  console.log('watchEffect')
+  setTimeout(() => {
+    console.log('after 1 second')
+  }, 1000)
+  // リアクティブな値を監視したい場合は、同期的に(watchEffectが実行されている間に)その関数にアクセスする必要がある
+  console.log(count.value)
+  count.value = 'hello'
+})
+</script>
+<template>
+  <p>{{ count }}</p>
+  <button @click="count++">+1</button>
+</template> -->
+
+// [watch]特定のリアクティブなデータの変更を監視する
+<script setup>
+import { ref, watchEffect, watch } from 'vue'
+const count1 = ref(0)
+const count2 = ref(0)
+const count3 = ref({
+  a: 0,
+})
+
+// 第一引数は.valueを付けない。refオブジェクト等のオブジェクトを直接指定する。
+// リアクティブオブジェクトを指定する場合は、オブジェクトのすべての値が監視対象となり、いずれか１つでも更新されるとwatch関数が実行されるので注意。
+// 第２引数を指定することが可能
+watch(count1, (newValue, oldValue) => {
+  console.log('watch')
+  // console.log(count1.value, count2.value, count3.value)
+  console.log('newValue', newValue, ', oldValue', oldValue)
+})
+// 第一引数に関数を指定することも可能。watchEffectと同様の動きをする
+// 第一引数の戻り値が常に同じ値を返すと、第二引数のnewValueとoldValueが同じ値となり第二引数の関数が実行されないので注意。
+watch(
+  () => {
+    console.log('watch first argument')
+    return count1.value
+  },
+  (newValue, oldValue) => {
+    console.log('watch')
+    // console.log(count1.value, count2.value, count3.value)
+    console.log('newValue', newValue, ', oldValue', oldValue)
+  },
+)
+// 第一引数に配列を指定することも可能
+// 単純に複数のデータを監視したい場合は配列指定がよい
+// newValue等は配列で値が格納される
+watch([count1, count2], (newValue, oldValue) => {
+  console.log('watch')
+  // console.log(count1.value, count2.value, count3.value)
+  console.log('newValue', newValue, ', oldValue', oldValue)
+})
+// リアクティブオブジェクトのプロパティを監視したい場合は、必ず関数で指定する
+watch(
+  () => count3.value.a,
+  (newValue, oldValue) => {
+    console.log('watch')
+    // console.log(count1.value, count2.value, count3.value)
+    console.log('newValue', newValue, ', oldValue', oldValue)
+  },
+)
+// 第３引数を指定し、watchを実行するタイミングをwatchEffect同様にすることも可能
+// 第２引数の関数の実行は最初の描画では実行されず、値が変更された際に実行されるー＞最初の描画でも実行されるようになる
+watch(
+  () => count3.value.a,
+  (newValue, oldValue) => {
+    console.log('watch')
+    // console.log(count1.value, count2.value, count3.value)
+    console.log('newValue', newValue, ', oldValue', oldValue)
+  },
+  {
+    immidiate: true,
+  },
+)
+
+watchEffect(() => {
+  console.log('watchEffect')
+  console.log(count1.value, count2.value, count3.value)
+})
+</script>
+<template>
+  <p>{{ count1 }}(count1)</p>
+  <p>{{ count2 }}(count2)</p>
+  <p>{{ count3 }}(count3)</p>
+  <button @click="count1++">count1++</button>
+  <button @click="count2++">count2++</button>
+  <button @click="count3++">count3++</button>
+</template>
