@@ -3,7 +3,9 @@
 // import Section4 from './components/LessonSection4.vue'
 // import Section5 from './components/LessonSection5.vue'
 // import Section6 from './components/LessonSection6.vue'
-import Section9 from './components/LessonSection9.vue'
+// import Section9 from './components/LessonSection9.vue'
+// import Section10 from './components/LessonSection10.vue'
+import Section11 from './components/LessonSection11.vue'
 // import { ref } from 'vue'
 // import FoodCard from './components/LessonSection7.vue'
 // const foods = ref([
@@ -36,7 +38,9 @@ import Section9 from './components/LessonSection9.vue'
   <Section4 />
   <Section5 />
   <Section6 /> -->
-  <Section9 />
+  <!-- <Section9 /> -->
+  <!-- <Section10 /> -->
+  <Section11 />
   <!-- <main>
     <h1 class="title">今日何食べる?</h1>
     <FoodCard
