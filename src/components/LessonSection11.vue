@@ -135,6 +135,11 @@ export function refLimitefHistory (source, capacity) {
   }
 } -->
 
-// composableの書き方のベストプラクティス(慣例) // composableの名前は、"use〜"とする //
-composableの引数にrefオブジェクトではない値を期待する場合、万が一refオブジェクトを引数で渡した場合でも意図した挙動をとるべきである。
-import {tovalue} from 'vue'
+// composableの書き方のベストプラクティス(慣例)
+<!-- ・composableの名前は、"use〜"とする
+・composableの引数にrefオブジェクトではない値を期待する場合、万が一refオブジェクトを引数で渡した場合でも意図した挙動をとるべきである。
+import { toValue } from 'vue'
+toValue(refオブジェクト or それ以外の値 or 関数) ・・・refオブジェクトの場合は、xxx.valueの値を返す。関数の場合は関数の戻り値を返す。
+・複数の値を返す場合は、必ず{}で囲いオブジェクトとして返す -->
+
+// VueUse 便利なcomposableを集めたサイト
