@@ -258,4 +258,406 @@ export default router -->
   <h2>NotFound</h2>
 </template> -->
 
-// リダイレクト(特定のページにアクセスすると別のページに飛ぶ)
+// リダイレクト(特定のページにアクセスすると別のページに飛ぶ)、エイリアス(パスの別名)
+<!-- index.js -->
+<!-- import AboutView from '../views/AboutView.vue'
+import BlogView from '../views/BlogView.vue'
+import NotFound from '../views/NotFound.vue'
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [{
+    path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/about',
+    // 1つのルート設定に対して、複数のパスを指定したい場合に使用
+    alias: ['/me', '/yoshipi']
+    name: 'about',
+    component: AboutView
+  },
+  {
+    path: '/blog/:id*',
+    name: 'blog',
+    redirect: {name: 'home'}
+  } ,
+  {
+    path: '/:catchAll(.*)*',
+    name: 'notFound',
+    redirect : '/'
+  }
+  ]
+})
+export default router -->
+
+// [props: true]コンポーネントの再利用性を上げる
+<!-- index.js -->
+<!-- import AboutView from '../views/AboutView.vue'
+import BlogView from '../views/BlogView.vue'
+import NotFound from '../views/NotFound.vue'
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [{
+    path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/about',
+    alias: ['/me', '/yoshipi']
+    name: 'about',
+    component: AboutView
+  },
+  {
+    path: '/blog/:id*',
+    name: 'blog',
+    redirect: {name: 'home'}
+  } ,
+  {
+    path: '/:catchAll(.*)*',
+    name: 'notFound',
+    props: true,
+    redirect : '/'
+  }
+  ]
+})
+export default router -->
+<!-- NotFound.vue -->
+<!-- <script setup>
+// パラメータの値をPropsとして受け取ることが可能
+defineProps({
+  catchAll: {
+    type: Array,
+    required: true
+  }
+})
+</script>
+<template>
+  <h2>NotFound</h2>
+  <p>{{ catchAll }}</p>
+</template> -->
+
+// ネストされたRouterViewの使い方
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import ProfileView from '../views/ProfileView.vue'
+import PostsView from '../views/PostsView.vue'
+import LikesView from '../views/LikesView.vue'
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView
+    },
+    {
+      path: '/:id',
+      name: 'profile',
+      component: ProfileView
+      // ネストされたRouterViewで表示される
+      children: [
+        {
+          // pathの先頭に/を付けると、親要素+/passではなく、/passとして認識される
+          // ''(空文字)を指定すると、親のpathにアクセスするだけで表示される様になる
+          path: 'posts',
+          component: PostsView
+        },
+        {
+          path: 'likes',
+          component: LikesView
+        },
+      ]
+    }
+  ]
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home'}">Home</RouterLink>
+  <RouterLink :to="{ name: 'profile', params: { id: 'yoshipi' }}">Profile</RouterLink>
+  <RouterView />
+</template> -->
+<!-- HomeView.vue -->
+<!-- <template>
+  <h2>Home</h2>
+  <RouterView />
+</template> -->
+<!-- ProfileView.vue -->
+<!-- <script setup></script>
+<template>
+  <h2>Profile(@){{ $route.params.id }}</h2>
+  <RouterView />
+</template> -->
+<!-- PostsView.vue -->
+<!-- <script setup></script>
+<template>
+  <h2>Posts</h2>
+</template> -->
+<!-- LikesView.vue -->
+<!-- <script setup></script>
+<template>
+  <h2>Likes</h2>
+</template> -->
+
+// [名前付きビュー] 複数のRouterViewを同じ階層に配置する
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+import ProfileView from '../views/ProfileView.vue'
+import ProfileView from '../views/NewsView.vue'
+import ProfileView from '../views/ProfileFooter.vue'
+import ProfileView from '../views/PeopleYouMayKnow.vue'
+import ProfileView from '../views/HomeFooter.vue'
+import PostsView from '../views/PostsView.vue'
+import LikesView from '../views/LikesView.vue'
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      components: {
+        default: HomeView,
+        Sidebar: NewsView,
+        Footer: HomeFooter,
+      }
+    },
+    {
+      path: '/:id',
+      name: 'profile',
+      components: {
+        default: ProfileView,
+        Sidebar: PeopleYouMayKnow,
+        Footer: ProfileFooter,
+      }
+      children: [
+        {
+          path: 'posts',
+          component: PostsView
+        },
+        {
+          path: 'likes',
+          component: LikesView
+        },
+      ]
+    }
+  ]
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home'}">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 'yoshipi' }}">Profile</RouterLink>
+  main>
+    <RouterView name="Sidebar" />
+  </div>
+  <RouterView name="Footer" />
+</template>
+<style scoped>
+.container {
+  display: flex;
+  justify-content: space-evenly;
+}
+</style> -->
+
+// [Transition] Vue Routerと一緒に使う方法
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView
+    }
+  ]
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 } }">Blog</RouterLink>
+  // 下記方法で記述すると、transitionの消えるアニメーションも問題なく動く
+  <RouterView v-slot="{ Component, route }">
+    <Transition name="fade" mode="out-in">
+      <component :is="Component" :key="route.path" />
+    </Transition>
+  </RouterView>
+</template>
+<style scoped>
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s;
+}
+</style> -->
+<!-- Blog.vue -->
+<!-- <template>
+  <div>
+    <h2>Blog(id: {{ $route.params.id }})</h2>
+    <RouterLink :to="{ name: 'blog', params: { id: Number($route.params.id) + 1 }}">Next</RouterLink>
+  </div>
+</template> -->
+
+// スクロールの振る舞いの指定
+(vueのデフォルトの挙動では、別のページを開いた際に新しいページの先頭にスクロールが戻らない)
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView
+    }
+  ],
+  // 引数を指定すると、移動先・移動元、戻るページのスクロール位置のデータを取得することが可能
+  scrollBehaviour(to, from, savedPosition) {
+    return {
+      // 上から100px分スクロールした位置を表示する。top,left以外に"el: '#blog'"などでidの表示位置を指定することも可能
+      top: 100
+      left: 0
+    }
+    // 応用編
+    return new Promise(resolve => {
+      // Promiseを設定するとresolveされるまでスクロールが実行されない。
+      setTimeout(() => {
+        if (savedPosition) {
+          return resolve(savedPosition)
+        }
+        if (to.hash) {
+          return resolve({
+            el: to.hash,
+            top: 20
+            behavior: 'smooth'
+          })
+        }
+        return resolve({ top: 0, left: 0, behavior: 'smooth' })
+        resolve()
+        // ボタン押下2秒後にスクロールが実行される
+      }, 2000);
+    })
+
+  }
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  <RouterView v-slot="{ Component, route }">
+    <Transition name="fade" mode="out-in">
+      <component :is="Component" :key="route.path" />
+    </Transition>
+  </RouterView>
+</template> -->
+
+// [beforeEach] ナビゲーションガードで特定のページに移動時に処理を実行する
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView
+    }
+  ],
+})
+router.beforeEach(async (to, from) => {
+  await new Promise(resolve => setTiemout(resolve, 2000))
+  console.log(to, from)
+  // 戻り値によってページ移動の挙動を変更できる
+  // false・・・ページ移動しない
+  return false
+  //if (to.name === 'blog') return true
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  <RouterView />
+</template> -->
+
+// [beforeEnter] ナビゲーションガードで特定のページに移動時に処理を実行する
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      beforeEnter: [foo, bar]
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView,
+      async beforeEnter(to, from) {
+        console.log('boforeEnter', to, from)
+        return '/'
+      }
+    }
+  ],
+})
+function foo() {}
+function bar() {}
+router.beforeEach(() => {
+  console.log('beforeEach')
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  <RouterView />
+</template> -->
+
+// [onBeforeRouteUpdate] ナビゲーションガードでコンポーネントの再利用時に処理を実行する
