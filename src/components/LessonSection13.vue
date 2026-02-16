@@ -661,3 +661,272 @@ export default router -->
 </template> -->
 
 // [onBeforeRouteUpdate] ナビゲーションガードでコンポーネントの再利用時に処理を実行する
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      beforeEnter: [foo, bar]
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView,
+      async beforeEnter(to, from) {
+        console.log('boforeEnter', to, from)
+        return '/'
+      }
+    }
+  ],
+})
+function foo() {}
+function bar() {}
+router.beforeEach(() => {
+  console.log('beforeEach')
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  <RouterView />
+</template> -->
+<!-- Blog.vue -->
+<!-- <script setup>
+import { onBeforeRouteUpdate } from "vue-router";
+// 実行されるタイミングは、パラメータorクエリorハッシュが変更された時
+onBeforeRouteUpdate(() => {
+  console.log('onBeforeRouteUpdate')
+})
+</script>
+<template>
+  <div>
+    <h2>Blog(id: {{ $route.params.id }})</h2>
+    <RouterLink :to="{ name: 'blog', params: { id: Number($route.params.id) + 1 }}">Next</RouterLink>
+  </div>
+</template> -->
+
+// [beforeResolve]ナビゲーションガードと [afterEach]フックでページ移動完了時に処理を実行する
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      beforeEnter: [foo, bar]
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      component: BlogView,
+      async beforeEnter(to, from) {
+        console.log('boforeEnter', to, from)
+        return '/'
+      }
+    }
+  ],
+})
+function foo() {}
+function bar() {}
+router.beforeEach(() => {
+  console.log('beforeEach')
+})
+router.beforeResolve((to, from) => {
+  // ページの移動が完了する直前に実行
+  console.log('beforeResolve')
+  // ページの移動をキャンセル可能
+  return false
+})
+router.afterEach((to, from) => {
+  // ページの移動が完了した後に実行
+  console.log('afterEach')
+
+})
+
+export default router -->
+
+// [onBeforeRouteLeave]ナビゲーションガードでページから離れる時に処理を実行する
+<!-- Blog.vue -->
+<!-- <script setup>
+import { onBeforeRouteUpdate, onBeforeRouteLeave } from "vue-router";
+onBeforeRouteUpdate(() => {
+  console.log('onBeforeRouteUpdate')
+})
+// Blogページから離れる時に実行される
+onBeforeRouteLeave(() => {
+  console.log('onBeforeRouteLeave')
+  return window.confirm('本当にこのページを離れますか？')
+})
+</script>
+<template>
+  <div>
+    <h2>Blog(id: {{ $route.params.id }})</h2>
+    <RouterLink :to="{ name: 'blog', params: { id: Number($route.params.id) + 1 }}">Next</RouterLink>
+  </div>
+</template> -->
+
+// [meta] 各ルートに情報をつける
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      meta: { transition: 'fade' }
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      meta: { requireAuth: true, transition: 'slide' }
+      component: BlogView,
+      async beforeEnter(to, from) {
+        console.log('boforeEnter', to, from)
+      }
+    }
+  ],
+})
+router.beforeEach(() => {
+  if (to.meta.rewuireAuth && !isLoggin) {
+    return '/'
+  }
+  console.log('beforeEach')
+})
+router.beforeResolve((to, from) => {
+  console.log('beforeResolve')
+  return false
+})
+router.afterEach((to, from) => {
+  console.log('afterEach')
+
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  // ページ移行した際のアニメーションを動的に変更する
+  <RouterView v-slot="{ Component, route }">
+    <Transition :name="route.meta.transition" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
+</template>
+<style scoped>
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(100px);
+}
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s;
+}
+</style> -->
+<!-- BlogView.vue -->
+<!-- <template>
+  <h2>Blog</h2>
+  // routeオブジェクトを通してmetaの値を取得可能
+  <p>{{ $route.meta }}</p>
+</template> -->
+
+// [Vue Router] 遅延読み込みして効率よくコンポーネントをダウンロードする
+<!-- index.js -->
+<!-- import { createRouter, createWebHistory } from 'vue-router'
+// 下記を削除し、動的importを代入したものをcomponentとして指定する
+// import HomeView from '../views/HomeView.vue'
+const HomeView = () => import('../views/HomeView.vue')
+import BlogView from '../views/BlogView.vue'
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      meta: { transition: 'fade' }
+      component: HomeView,
+    },
+    {
+      path: '/blog/:id',
+      name: 'blog',
+      meta: { requireAuth: true, transition: 'slide' }
+      component: BlogView,
+      async beforeEnter(to, from) {
+        console.log('boforeEnter', to, from)
+      }
+    }
+  ],
+})
+router.beforeEach(() => {
+  if (to.meta.rewuireAuth && !isLoggin) {
+    return '/'
+  }
+  console.log('beforeEach')
+})
+router.beforeResolve((to, from) => {
+  console.log('beforeResolve')
+  return false
+})
+router.afterEach((to, from) => {
+  console.log('afterEach')
+
+})
+export default router -->
+<!-- App.vue -->
+<!-- <script setup></script>
+<template>
+  <h1>Vue Router</h1>
+  <RouterLink :to="{ name: 'home' }">Home</RouterLink>
+  <RouterLink :to="{ name: 'blog', params: { id: 3 }, hash: '#blog' }">Blog(id: 3)</RouterLink>
+  // ページ移行した際のアニメーションを動的に変更する
+  <RouterView v-slot="{ Component, route }">
+    <Transition :name="route.meta.transition" mode="out-in">
+      <component :is="Component" />
+    </Transition>
+  </RouterView>
+</template>
+<style scoped>
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(100px);
+}
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s;
+}
+</style> -->
